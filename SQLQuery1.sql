@@ -197,9 +197,12 @@ From Employees
 select len(Ename)
 From Employees
 
+/*DataTypes
 
 int,Bigint,smallint,money
 varchar,char,text
 float,double,real
 date,time,datetime,
 nchar,nvarchar
+*/
+
