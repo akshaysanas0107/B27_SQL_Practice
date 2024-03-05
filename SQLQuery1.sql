@@ -36,12 +36,12 @@ INSERT INTO Employees
 VALUES (101,'Akshay',40000,202,'Pune')
 
 INSERT INTO Employees VALUES 
-(102,'Sandip',50000,203,'Pune'),
-(103,'Vijay',30000,201,'Mumbai'),
-(104,'Abhi',77000,203,'Nashik')
+(110,'Mahendra',40000,204,'Pune'),
+(111,'Yash',70000,204,'Mumbai'),
+(112,'Ajay',90000,202,'Nashik')
 
 Insert into Employees
-Values (107,'Sham',30000,201,NULL)
+Values (109,'Sita',30000,203,'Nashik')
 
 Insert into Employees (Empid,Ename,Dept,City)
 Values (106,'Ram',202,'Mumbai')
@@ -330,7 +330,109 @@ where salary < (select max(salary) from Employees))
 select max(salary) from Employees
 where salary not in (select max(salary) from Employees)
 
+--Display 2 Employees from each department having highest salary
+
+
 --------------Set Operators---------------------------
 
+A = {1,2,3,4,5}
+B ={3,4,5,6,7}
 
+Union
+Union ALL
+Intersect
+Except
+
+--Display Employees of Dept 202 from city Pune and Employees of Dept 203 from city Mumbai 
+
+Select *
+From Employees
+Where Dept = 202 and City = 'Pune' 
+Union
+Select *
+From Employees
+Where Dept = 203 and City = 'Mumbai'
+
+-- Display Departments in Pune as well in Mumbai
+
+Select Dept
+From Employees
+Where City = 'Pune' 
+Intersect
+Select Dept
+From Employees
+Where City = 'Mumbai'
+
+--Display Emp details from Dept pune and Mumbai
+
+Select * 
+From Employees
+Where City = 'Pune' or City = 'Mumbai'
+
+--Display Departments in Mumbai but not in Pune
+
+Select Dept
+From Employees
+Where City = 'Mumbai'
+Except
+Select Dept
+From Employees
+Where City = 'Pune'
+
+--Subquery
+
+-- Display Emp Names having Maximum Salary in Each Department
+
+Select Ename,Salary,Dept 
+From Employees
+Where Salary in 
+	(Select max(Salary)
+	From Employees
+	Where 1=1
+	Group By Dept)
+Order by Dept
+
+--Create Table Department
+
+create table Department
+(
+	Did int,
+	Dname varchar(20),
+)
+
+Select * From Employees
+Select * From Department
+
+Insert into Department Values
+(201,'Admin'),
+(202,'HR'),
+(203,'Sales'),
+(204,'Finance')
+
+--Display Employees from HR Department
+
+Select * 
+From Employees
+Where dept in (Select Did From Department 
+				Where Dname = 'HR')
+
+--Find From Where the Employees of Sales Department Work From
+
+Select City
+From Employees 
+Where Dept in (Select Did From Department
+				Where Dname = 'Sales')
+
+
+
+
+--constraints
+Not NULL
+Unique
+Default
+Check
+Primary Key
+Foreign Key
+
+--
 
