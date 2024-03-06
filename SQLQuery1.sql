@@ -33,7 +33,7 @@ SELECT * FROM Employees
 
 -----DML-------
 INSERT INTO Employees
-VALUES (101,'Akshay',40000,202,'Pune')
+VALUES (112,'Pradeep',50000,202,'Pune')
 
 INSERT INTO Employees VALUES 
 (110,'Mahendra',40000,204,'Pune'),
@@ -332,23 +332,42 @@ where salary not in (select max(salary) from Employees)
 
 --Display 2 Employees from each department having highest salary
 
+Select * From
+(Select *, Row_number() over(partition by Dept order by Salary Desc) as Row_number
+From Employees) T1
+Where Row_number <= 2
+
+
+-- Display Highest Salary in Each Department
+
+Select Dept,max(Salary) As Highest_salary
+from Employees
+Where 1=1
+Group By Dept
 
 --------------Set Operators---------------------------
-
-A = {1,2,3,4,5}
-B ={3,4,5,6,7}
-
 Union
 Union ALL
 Intersect
 Except
+
+Example:
+A = {1,2,3,4,5}
+B ={3,4,5,6,7}
+
+A Union B = {1,2,3,4,5,6,7}
+A Union All B = {1,2,3,4,5,3,4,5,6,7}
+A Intersect B = {3,4,5}
+A Except B = {1,2}
+B Except A = {6,7}
+
 
 --Display Employees of Dept 202 from city Pune and Employees of Dept 203 from city Mumbai 
 
 Select *
 From Employees
 Where Dept = 202 and City = 'Pune' 
-Union
+Union 
 Select *
 From Employees
 Where Dept = 203 and City = 'Mumbai'
@@ -423,8 +442,9 @@ From Employees
 Where Dept in (Select Did From Department
 				Where Dname = 'Sales')
 
+Before Constraints
 
-
+Insert into Employees values (113,'Ramesh',60000,205,'Nagpur')
 
 --constraints
 Not NULL
@@ -434,5 +454,330 @@ Check
 Primary Key
 Foreign Key
 
---
+--Not NULL
+--Add Not NULL Constraint to Ename Column in Employees table
 
+Alter Table Employees
+Alter Column Ename Nvarchar(25) Not NULL
+
+Insert into Employees Values (114,NULL,40000,204,'Nagpur')
+
+--Add Not NULL Constraint to City Column in Employees table
+
+Select * 
+From Employees
+
+Update Employees
+Set City = 'UNKNOWN'
+Where City IS NULL
+
+Alter Table Employees
+Alter Column City Varchar(20) Not NULL
+
+-- Unique constraint
+--Add Unique
+
+Select * 
+From Employees
+
+Delete From Employees
+Where Ename in ('Ram','Pradeep')
+
+--Column level
+
+Alter Table Employees
+Add Constraint UK_Empid Unique(Empid)
+
+Insert into Employees Values (103,'Sahil',60000,201,'Pune')
+
+Update Employees
+Set Empid = 103
+Where Ename = 'Akshay'
+
+Insert into Employees (Ename,Salary,Dept,City) Values ('Rishi',60000,201,'Pune')
+
+--table level
+Create table Students
+(
+	Sid int,
+	Sname varchar(25),
+	location varchar(20),
+	Aadhar Bigint,
+	Unique(Sid,Aadhar)
+)
+
+Select * From Students
+
+Insert into Students Values (102,'Sandip','Pune',736987532168)
+
+Drop Table Students
+
+--Default Constraint
+Select * 
+From Employees
+
+Alter Table Employees
+Add Constraint Df_city
+Default 'UNKNOWN' for City
+
+Insert into Employees(Empid,Ename,Salary,Dept) Values (114,'Rishi',60000,201)
+
+-- Check Constraint
+
+--column level
+Create table Students
+(
+	Sid int,
+	Sname varchar(25),
+	location varchar(20),
+	Aadhar Bigint Check(len(Aadhar) = 12),
+	
+)
+
+Insert into Students Values (102,'Sandip','Pune',987654321234)
+
+Select * From Students
+
+Drop Table Students
+
+--Primary Key (Unique + Not NULL)
+
+--column level
+Create table Students
+(
+	Sid int Primary Key,
+	Sname varchar(25),
+	location varchar(20),
+	Aadhar Bigint Check(len(Aadhar) = 12),
+	
+)
+
+Insert into Students Values (102,'Sandip','Pune',987654321234)
+
+Insert into Students Values (102,'Akshay','Pune',987654321234)
+
+Insert into Students Values (NULL,'Sandip','Pune',987654321234)
+
+Drop Table Students
+
+-- table level
+
+Create table Students
+(
+	Sid int,
+	Sname varchar(25),
+	location varchar(20),
+	Aadhar Bigint Check(len(Aadhar) = 12),
+	Primary Key (Sid,Aadhar)
+)
+
+Insert into Students Values (102,'Sandip','Pune',987654321234)
+
+Insert into Students Values (102,'Akshay','Pune',987654321234)
+
+Insert into Students Values (NULL,'Sandip','Pune',987654321234)
+
+Insert into Students Values (102,'Akshay','Pune',987654321235)
+
+Insert into Students Values (103,'Ramesh','Pune',987654321235)
+
+select * From Students
+
+drop Table Students
+
+-- Foreign Key
+
+--For NO ACTION / Default Action
+
+Create Table College_Department
+(
+	Did int Primary key,
+	Dname varchar(25),
+	
+)
+
+
+Create table Students
+(
+	Sid int primary key ,
+	Sname varchar(25),
+	location varchar(20),
+	Aadhar Bigint Check(len(Aadhar) = 12),
+	Dept_id int Foreign Key References College_Department(Did),
+
+)
+
+Select * From Students
+Select * From College_Department
+
+Insert into college_Department Values (201,'Computer Science')
+
+Insert into Students values (101,'Ramesh','Pune',987654321235,201)
+
+Insert into college_Department Values (202,'ENTC'),(203,'Mechanical')
+
+Insert into Students values 
+(102,'Sandip','Pune',987654321225,202),
+(103,'Akshay','Mumbai',987654321224,201),
+(104,'Vijay','Pune',987654321235,201),
+(105,'Ram','Mumbai',987654321565,202)
+
+Update College_Department
+Set Did = 204
+Where Did = 201
+
+Update Students
+Set Dept_id = 204
+Where Dept_id = 201
+
+Delete From College_Department
+Where Did = 202
+
+Delete From Students
+Where Dept_id = 201
+
+Drop Table College_Department
+Drop Table Students
+
+-- For CASCADE
+
+Create Table College_Department
+(
+	Did int Primary key,
+	Dname varchar(25),
+	
+)
+
+
+Create table Students
+(
+	Sid int primary key ,
+	Sname varchar(25),
+	location varchar(20),
+	Aadhar Bigint Check(len(Aadhar) = 12),
+	Dept_id int Foreign Key References College_Department(Did)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+)
+
+Select * From Students
+Select * From College_Department
+
+Insert into college_Department Values (201,'Computer Science')
+
+Insert into Students values (101,'Ramesh','Pune',987654321235,201)
+
+Insert into college_Department Values (202,'ENTC'),(203,'Mechanical')
+
+Insert into Students values 
+(102,'Sandip','Pune',987654321225,205),
+(103,'Akshay','Mumbai',987654321224,201),
+(104,'Vijay','Pune',987654321235,201),
+(105,'Ram','Mumbai',987654321565,203)
+
+Update college_department
+Set Did = 205
+Where Did = 201
+
+Delete From college_department
+Where Did = 202
+
+Delete From Students
+Where Dept_id = 205
+
+Drop Table College_Department
+Drop Table Students
+
+--For SET NULL
+Create Table College_Department
+(
+	Did int Primary key,
+	Dname varchar(25),
+	
+)
+
+
+Create table Students
+(
+	Sid int primary key ,
+	Sname varchar(25),
+	location varchar(20),
+	Aadhar Bigint Check(len(Aadhar) = 12),
+	Dept_id int Foreign Key References College_Department(Did)
+	ON DELETE SET NULL
+	ON UPDATE SET NULL
+)
+
+Select * From Students
+Select * From College_Department
+
+Insert into college_Department Values (201,'Computer Science')
+
+Insert into Students values (101,'Ramesh','Pune',987654321235,201)
+
+Insert into college_Department Values (202,'ENTC'),(203,'Mechanical')
+
+Insert into Students values 
+(102,'Sandip','Pune',987654321225,202),
+(103,'Akshay','Mumbai',987654321224,201),
+(104,'Vijay','Pune',987654321235,201),
+(105,'Ram','Mumbai',987654321565,203)
+
+Update college_department
+Set Did = 204
+Where Did = 203
+
+Delete From college_department
+Where Did = 202
+
+Drop Table College_Department
+Drop Table Students
+
+--For SET DEFAULT
+Create Table College_Department
+(
+	Did int Primary key,
+	Dname varchar(25),	
+)
+
+
+Create table Students
+(
+	Sid int primary key ,
+	Sname varchar(25),
+	location varchar(20),
+	Aadhar Bigint Check(len(Aadhar) = 12),
+	Dept_id int Default 210 Foreign Key References College_Department(Did)
+	ON DELETE SET DEFAULT 
+	ON UPDATE SET DEFAULT 
+)
+
+Select * From Students
+Select * From College_Department
+
+Insert into college_Department Values (201,'Computer Science')
+
+Insert into Students values (101,'Ramesh','Pune',987654321235,201)
+
+Insert into Students(Sid,Sname,location,Aadhar) values (106,'Ramesh','Pune',987654321235)
+
+Insert into Students values (105,'Ramesh','Pune',987654321235,NULL)
+
+
+Insert into college_Department Values (202,'ENTC'),(203,'Mechanical')
+
+Insert into Students values 
+(102,'Sandip','Pune',987654321225,202),
+(103,'Akshay','Mumbai',987654321224,201),
+(104,'Vijay','Pune',987654321235,201),
+(107,'Ram','Mumbai',987654321565,203)
+
+Update college_department
+Set Did = 204
+Where Did = 203
+
+Delete From college_department
+Where Did = 202
+
+Drop Table College_Department
+Drop Table Students
