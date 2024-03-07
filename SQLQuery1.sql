@@ -824,3 +824,37 @@ Except
 	-multi value
 	-nested subquery
 	-corelated subquery
+------------------------------------------------------------------------------------
+--Create table Emp_backup and copy data of Employees table to Emp_backup
+
+--method 1:-
+Select * From Employees
+
+Create Table Emp_backup
+(
+	Empid int primary key,
+	Ename Nvarchar(25),
+	Salary money,
+	Dept int,
+	City varchar(20)
+)
+
+Select * From Emp_backup
+
+Insert into Emp_backup
+select * From Employees
+
+drop table Emp_backup
+-------------------------
+--method 2:-
+
+-- To Copy only structure
+Select * into Emp_backup
+From Employees
+Where 1=0
+
+-- To copy Structure with Data
+select * into Emp_backup 
+From Employees
+
+Select * From Emp_backup
