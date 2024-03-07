@@ -814,7 +814,7 @@ Intersect
 Except
 --Inbuilt functions:
  -Aggregate functions:- min(),max(),count(),sum(),avg()
- -scalar functions:- abs(),pow(),sin(),cos(),tan(),square(),sqrt(),floor(),ceiling(),pi()
+ -scalar functions:- abs(),power(),sin(),cos(),tan(),square(),sqrt(),floor(),ceiling(),pi()
  -ranking functions:- rank(),dense_rank(),row_number()
  -string functions:- upper(),lower(),substring(),left(),right(),ltrim(),rtrim(),stuff()
  -date functions:- getdate(),dateadd(),datepart(),datename(),datediff()
