@@ -781,3 +781,46 @@ Where Did = 202
 
 Drop Table College_Department
 Drop Table Students
+
+----------------------------------------
+--constraints:
+NOT NULL :-
+	Does not allow NULL Values, Column Level 
+Default :-
+	sets Default value to column , Column Level
+Check :-
+	used to check each value inserted in column , Column level , it is slow
+Unique :-
+	(Unique + NULL) , 1 NULL is Allowed , Duplicates NOT ALLOWED , Column level and Table Level,
+	1 table has multiple Unique keys
+Primary key :-
+	(Unique + NOT NULL), NULL NOT ALLOWED , Duplicates NOT ALLOWED , Column level and Table Level,
+	1 table has only 1 primary key
+Foreign key :-
+	is a column in a table that references to the primary key in other table,
+	NULLs are Allowed,Duplicates are ALLOWED ,  Column level , 
+	1 table can have multiple Foreign keys
+
+--operators :
++,-,*,/,%
+and,or,not
+like,
+between,
+in
+--set operators :
+Union
+Union ALL
+Intersect
+Except
+--Inbuilt functions:
+ -Aggregate functions:- min(),max(),count(),sum(),avg()
+ -scalar functions:- abs(),pow(),sin(),cos(),tan(),square(),sqrt(),floor(),ceiling(),pi()
+ -ranking functions:- rank(),dense_rank(),row_number()
+ -string functions:- upper(),lower(),substring(),left(),right(),ltrim(),rtrim(),stuff()
+ -date functions:- getdate(),dateadd(),datepart(),datename(),datediff()
+--Subquery :-
+	Query inside query is called subquery
+	-single value
+	-multi value
+	-nested subquery
+	-corelated subquery
