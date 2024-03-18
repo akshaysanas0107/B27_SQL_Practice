@@ -782,79 +782,185 @@ Where Did = 202
 Drop Table College_Department
 Drop Table Students
 
-----------------------------------------
---constraints:
-NOT NULL :-
-	Does not allow NULL Values, Column Level 
-Default :-
-	sets Default value to column , Column Level
-Check :-
-	used to check each value inserted in column , Column level , it is slow
-Unique :-
-	(Unique + NULL) , 1 NULL is Allowed , Duplicates NOT ALLOWED , Column level and Table Level,
-	1 table has multiple Unique keys
-Primary key :-
-	(Unique + NOT NULL), NULL NOT ALLOWED , Duplicates NOT ALLOWED , Column level and Table Level,
-	1 table has only 1 primary key
-Foreign key :-
-	is a column in a table that references to the primary key in other table,
-	NULLs are Allowed,Duplicates are ALLOWED ,  Column level , 
-	1 table can have multiple Foreign keys
+-------------------------------------------
+-- drop constraint
 
---operators :
-+,-,*,/,%
-and,or,not
-like,
-between,
-in
---set operators :
-Union
-Union ALL
-Intersect
-Except
---Inbuilt functions:
- -Aggregate functions:- min(),max(),count(),sum(),avg()
- -scalar functions:- abs(),power(),sin(),cos(),tan(),square(),sqrt(),floor(),ceiling(),pi()
- -ranking functions:- rank(),dense_rank(),row_number()
- -string functions:- upper(),lower(),substring(),left(),right(),ltrim(),rtrim(),stuff()
- -date functions:- getdate(),dateadd(),datepart(),datename(),datediff()
---Subquery :-
-	Query inside query is called subquery
-	-single value
-	-multi value
-	-nested subquery
-	-corelated subquery
-------------------------------------------------------------------------------------
---Create table Emp_backup and copy data of Employees table to Emp_backup
+Select * 
+From Information_schema.table_constraints
 
---method 1:-
-Select * From Employees
+-- unique key from employees table
 
-Create Table Emp_backup
+Alter table Employees
+Drop constraint UK_Empid
+
+----18-03-2024--------------------------
+Create table Country
 (
-	Empid int primary key,
-	Ename Nvarchar(25),
-	Salary money,
-	Dept int,
-	City varchar(20)
+	Country_id int,
+	Country_name varchar(25),
+	
 )
 
-Select * From Emp_backup
+Create table State
+(
+	State_id int,
+	State_name varchar(25),
+	Country_id int
+)
 
-Insert into Emp_backup
+Create table District
+(
+	District_id int,
+	District_name varchar(25),
+	State_id int
+)
+
+
+----------------------------------------------
+Insert into Country values
+(201,'India'),
+(202,'USA'),
+(203,'Russia')
+
+
+
+Insert into State values
+(1,'Maharashtra',201),
+(2,'Karnataka',201),
+(3,'Tamil Nadu',201),
+(4,'Gujurat',201),
+(5,'Delhi',201),
+(6,'Goa',201)
+
+Insert into District values
+(101,'Pune',1),
+(102,'Mumbai',1),
+(103,'Nagpur',1),
+(104,'Nashik',1),
+(105,'Belgav',2),
+(106,'Banglore',2),
+(107,'Maysore',2),
+(108,'Chennai',3),
+(109,'Rameshwaram',3),
+(110,'Panji',6)
+
+
+
+
+------------------------------------
+Select * From Country
+Select * From State
+Select * From District
+
+------------------------------------
+--Display District details of State of Maharashtra
+
+Select *
+From District
+Where State_id in (Select State_id From State Where State_name = 'Maharashtra')
+
+--Display District details and state name of State of Maharashtra
+
+Select d.*,s.state_name
+From District d
+Join State s
+On d.State_id = s.State_id
+Where s.state_name = 'Maharashtra'
+
+--display Districts from country India
+select *
+From District
+Where State_id in
+(select State_id
+From State 
+Where Country_id in (Select country_id
+						From Country
+						Where Country_name = 'India'))
+
+--display Districts,state and country details from country India
+
+select d.*,s.state_name,c.country_name
+From District d
+Join State s
+On d.state_id = s.state_id
+Join Country c
+On c.country_id = s.country_id
+Where c.country_name = 'India'
+
+--Find 3rd Highest Salary using subquery
+
 select * From Employees
+Where Salary in(select max(salary) from Employees
+				Where salary < (select max(salary) from Employees
+				Where salary < (Select max(salary) From Employees)))
 
-drop table Emp_backup
--------------------------
---method 2:-
+--Find 2nd and 3rd Highest Salary From Employees
 
--- To Copy only structure
-Select * into Emp_backup
-From Employees
-Where 1=0
+Select *From
+(Select *,Dense_rank() over(order by salary Desc) as Sal_rank 
+From Employees) T1
+Where Sal_rank in (2,3)
 
--- To copy Structure with Data
-select * into Emp_backup 
-From Employees
+--Find 2nd lowest Salary From Employees
+
+Select * From Employees
+Where Salary in (Select Min(salary) From Employees
+				Where Salary > (Select Min(Salary) From Employees))
+
+--Nth Highest Salary (Say 5th salary)
+
+Select *
+From Employees main_q 
+Where 4 = (Select count(Distinct Salary)
+			From Employees sub_q
+			Where sub_q.salary >= main_q.salary)
+
+-------------------------------------------------------------
 
 Select * From Emp_backup
+
+Alter Table Emp_backup
+Add Mgr_id int
+
+--Display employees with their manager names
+
+Select e.Empid,e.Ename,e.Salary,e.Dept,e.mgr_id,m.Ename
+From Emp_backup e
+Join Emp_backup m
+On e.mgr_id = m.Empid
+
+--Display Employees who leave in the same city as Abhi leaves
+
+Select *
+From Emp_backup e
+Join Emp_backup m
+On e.City = m.City and e.Empid != m.Empid
+Where e.Ename = 'Abhi'
+
+--Display Employee Details with their Department details
+
+Select e.*,d.Dname
+From Employees e
+Join Department d
+On e.dept = d.did
+
+--Diplay Employees with their departments and also the departments that are having no employees
+
+Select e.*,d.Dname
+From Employees e
+Right Join Department d
+On e.dept = d.did
+
+--display Employees having no Department
+
+Select *
+From Employees
+Where dept IS NULL
+
+
+
+
+
+
+
+
